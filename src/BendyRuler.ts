@@ -166,7 +166,7 @@ export class BendyRuler {
     }
 
     public finalise (finalPoint: Vector2): void {
-        this.points.push(new Point(finalPoint));
+        this.points.push(new Point(this.getRoundedPosition(finalPoint)));
 
         const items = this.update(null);
         if (items)
