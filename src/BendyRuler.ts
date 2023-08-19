@@ -1,48 +1,23 @@
 import OBR, {
     buildPath,
-    buildShape,
     buildText,
     Command,
     InteractionManager,
     Item,
     Path,
     PathCommand,
-    Shape,
     Text,
     Vector2,
 } from '@owlbear-rodeo/sdk';
 import { grid } from './SyncGridData';
 
-class Point implements Vector2 {
-
-    public readonly x: number;
-    public readonly y: number;
-    public readonly marker: Shape;
-
-    constructor (point: Vector2) {
-        this.x = point.x;
-        this.y = point.y;
-
-        this.marker = buildShape()
-            .fillColor('grey')
-            .position(point)
-            .layer('RULER')
-            .shapeType('CIRCLE')
-            .height(50)
-            .width(50)
-            .disableHit(true)
-            .build();
-    }
-}
-
-type RawInteractionItems = [Path, Text, ...Shape[]];
-
 export class BendyRuler {
 
-    private readonly points: Point[] = [];
+    private readonly points: Vector2[] = [];
     private readonly path: Path;
+    private readonly pointMarkers: Path;
     private readonly label: Text;
-    private interaction?: InteractionManager<RawInteractionItems>;
+    private interaction?: InteractionManager<[path: Path, pointMarkers: Path, label: Text]>;
 
     constructor (startPoint: Vector2) {
 
@@ -53,6 +28,16 @@ export class BendyRuler {
             .strokeDash([50, 25])
             .fillOpacity(0)
             .layer('RULER')
+            .build();
+
+        this.pointMarkers = buildPath()
+            .position({ x: 0, y: 0 })
+            .strokeColor('black')
+            .strokeWidth(10)
+            .fillColor('white')
+            .layer('RULER')
+            .attachedTo(this.path.id)
+            .disableHit(true)
             .build();
 
         this.label = buildText()
@@ -80,39 +65,15 @@ export class BendyRuler {
     }
 
     /** Add a new point and redraw the line. */
-    public async addPoint (newPoint: Vector2) {
-        const point = new Point(newPoint);
+    public async addPoint (point: Vector2) {
         this.points.push(point);
-        point.marker.attachedTo = this.path.id;
 
-        // Reset the interaction.
-        await this.initInteraction();
+        // Start the interaction, if needed.
+        if (!this.interaction)
+            this.interaction = await OBR.interaction.startItemInteraction([this.path, this.pointMarkers, this.label]);
 
         // Redraw the line.
         this.update(null);
-    }
-
-    private async initInteraction () {
-        // Work out which items we need to interact with.
-        const itemsForInteraction: RawInteractionItems = [this.path, this.label];
-        for (const p of this.points)
-            itemsForInteraction.push(p.marker);
-
-        // Stash the old interaction, so we can stop it after the new one is ready.  If we stop it now then there will be flicker as the new one isn't instantly ready.
-        const oldInteraction = this.interaction;
-        this.interaction = await OBR.interaction.startItemInteraction(itemsForInteraction);
-        if (oldInteraction) {
-            const [_, stop] = oldInteraction;
-            stop();
-        }
-    }
-
-    /** Get items from the interaction, and set the types. */
-    private getItems (items: RawInteractionItems): [Path, Text, Shape[]] {
-        const points: Shape[] = [];
-        for (let i = 1; i < items.length; i += 2)
-            points.push(items[i] as Shape);
-        return [items[0], items[1], points];
     }
 
     /** Redraw the line, with an optional mouse position to draw to */
@@ -123,20 +84,29 @@ export class BendyRuler {
 
         const [update] = this.interaction;
         return update((items) => {
-            const [path, label] = this.getItems(items);
+            const [path, pointMarkers, label] = items;
 
             // Update the path.
             if (path) {
-                const commands: PathCommand[] = [];
+                const pathCommands: PathCommand[] = [];
                 for (const point of this.points) {
-                    if (!commands.length)
-                        commands.push([Command.MOVE, point.x, point.y]);
+                    if (!pathCommands.length)
+                        pathCommands.push([Command.MOVE, point.x, point.y]);
                     else
-                        commands.push([Command.LINE, point.x, point.y]);
+                        pathCommands.push([Command.LINE, point.x, point.y]);
                 }
                 if (currentPoint)
-                    commands.push([Command.LINE, currentPoint.x, currentPoint.y]);
-                path.commands = commands;
+                    pathCommands.push([Command.LINE, currentPoint.x, currentPoint.y]);
+                path.commands = pathCommands;
+            }
+
+            // Update the dots
+            if (pointMarkers) {
+                const pointCommands: PathCommand[] = [];
+                for (const point of this.points) {
+                    pointCommands.push(...this.circle(point, 25));
+                }
+                pointMarkers.commands = pointCommands;
             }
 
             // Update the label
@@ -144,7 +114,7 @@ export class BendyRuler {
                 label.position = this.getLabelPosition(currentPoint);
 
                 let dist = 0;
-                let prev: Point | null = null;
+                let prev: Vector2 | null = null;
                 for (const point of this.points) {
                     if (prev) {
                         dist += this.calcDistanceInSquares(prev, point);
@@ -202,4 +172,15 @@ export class BendyRuler {
         stop();
         this.interaction = undefined;
     }
+
+    private circle (center: Vector2, radius: number): PathCommand[] {
+        return [
+            [Command.MOVE, center.x, center.y + radius],
+            [Command.CONIC, center.x + radius, center.y + radius, center.x + radius, center.y, Math.PI / 4],
+            [Command.CONIC, center.x + radius, center.y - radius, center.x, center.y - radius, Math.PI / 4],
+            [Command.CONIC, center.x - radius, center.y - radius, center.x - radius, center.y, Math.PI / 4],
+            [Command.CONIC, center.x - radius, center.y + radius, center.x, center.y + radius, Math.PI / 4],
+        ];
+    }
+
 }
