@@ -67,15 +67,6 @@ export class BendyRuler {
         this.addPoint(startPoint);
     }
 
-    private getRoundedPosition (point: Vector2): Vector2 {
-        const dpi = grid.dpi;
-        const halfDpi = { x: grid.dpi / 2, y: grid.dpi / 2 };
-        return {
-            x: Math.round((point.x + halfDpi.x) / dpi) * dpi - halfDpi.x,
-            y: Math.round((point.y + halfDpi.y) / dpi) * dpi - halfDpi.y,
-        };
-    }
-
     private calcDistanceInSquares (p1: Vector2, p2: Vector2): number {
         const dx = Math.abs(p1.x - p2.x);
         const dy = Math.abs(p1.y - p2.y);
@@ -84,7 +75,7 @@ export class BendyRuler {
 
     /** Add a new point and redraw the line. */
     public async addPoint (newPoint: Vector2) {
-        const point = new Point(this.getRoundedPosition(newPoint));
+        const point = new Point(newPoint);
         this.points.push(point);
         point.marker.attachedTo = this.path.id;
 
@@ -124,9 +115,6 @@ export class BendyRuler {
         if (!this.interaction)
             return null;
 
-        if (currentPoint)
-            currentPoint = this.getRoundedPosition(currentPoint);
-
         const [update] = this.interaction;
         return update((items) => {
             const [path, label] = this.getItems(items);
@@ -165,9 +153,7 @@ export class BendyRuler {
         });
     }
 
-    public finalise (finalPoint: Vector2): void {
-        this.points.push(new Point(this.getRoundedPosition(finalPoint)));
-
+    public finalise (): void {
         const items = this.update(null);
         if (items)
             OBR.scene.items.addItems(items);
