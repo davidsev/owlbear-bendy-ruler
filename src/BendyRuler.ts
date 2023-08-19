@@ -59,7 +59,13 @@ export class BendyRuler {
             .position({ x: 0, y: 0 })
             .layer('RULER')
             .plainText('')
-            .fontSize(60)
+            .fontWeight(900)
+            .fontSize(75)
+            .strokeColor('black')
+            .strokeWidth(5)
+            .fillColor('white')
+            .textAlign('CENTER')
+            .textAlignVertical('MIDDLE')
             .textType('PLAIN')
             .attachedTo(this.path.id)
             .build();
@@ -135,7 +141,7 @@ export class BendyRuler {
 
             // Update the label
             if (label) {
-                label.position = currentPoint || this.points[this.points.length - 1];
+                label.position = this.getLabelPosition(currentPoint);
 
                 let dist = 0;
                 let prev: Point | null = null;
@@ -151,6 +157,33 @@ export class BendyRuler {
                 label.text.plainText = dist * grid.gridScale.parsed.multiplier + grid.gridScale.parsed.unit;
             }
         });
+    }
+
+    private getLabelPosition (currentPoint: Vector2 | null): Vector2 {
+        if (this.points.length == 0) {
+            if (currentPoint)
+                return currentPoint;
+            throw new Error('No points to get label position from');
+        }
+
+        if (this.points.length == 1 && !currentPoint)
+            return this.points[0];
+
+        if (currentPoint) {
+            const p1 = this.points[this.points.length - 1];
+            const p2 = currentPoint;
+            return {
+                x: (p1.x + p2.x) / 2,
+                y: (p1.y + p2.y) / 2,
+            };
+        } else {
+            const p1 = this.points[this.points.length - 2];
+            const p2 = this.points[this.points.length - 1];
+            return {
+                x: (p1.x + p2.x) / 2,
+                y: (p1.y + p2.y) / 2,
+            };
+        }
     }
 
     public finalise (): void {
