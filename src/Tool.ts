@@ -41,13 +41,13 @@ export class Tool implements ToolMode {
         if (!this.ruler) {
             this.ruler = new BendyRuler(point);
             this.cancelButton = buildLabel()
-                .position({ x: point.x - 45, y: point.y - 40 })
+                .position({ x: point.x + 45, y: point.y - 40 })
                 .layer('CONTROL')
                 .plainText('🗑️')
                 .pointerHeight(0)
                 .build();
             this.keepButton = buildLabel()
-                .position({ x: point.x + 45, y: point.y - 40 })
+                .position({ x: point.x - 45, y: point.y - 40 })
                 .layer('CONTROL')
                 .plainText('✅')
                 .pointerHeight(0)
