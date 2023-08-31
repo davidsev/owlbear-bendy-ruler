@@ -4,7 +4,7 @@ import { grid } from './SyncGridData';
 
 (window as any).init = function () {
     OBR.onReady(async () => {
-        await grid.init();
+        grid.init();
         OBR.tool.createMode(new Tool());
     });
 };
