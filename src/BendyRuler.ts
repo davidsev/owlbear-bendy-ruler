@@ -9,7 +9,7 @@ import OBR, {
     Text,
     Vector2,
 } from '@owlbear-rodeo/sdk';
-import { grid } from './SyncGridData';
+import { grid } from '@davidsev/owlbear-utils';
 
 export class BendyRuler {
 
@@ -56,12 +56,6 @@ export class BendyRuler {
             .build();
 
         this.addPoint(startPoint);
-    }
-
-    private calcDistanceInSquares (p1: Vector2, p2: Vector2): number {
-        const dx = Math.abs(p1.x - p2.x);
-        const dy = Math.abs(p1.y - p2.y);
-        return Math.max(dx, dy) / grid.dpi;
     }
 
     /** Add a new point and redraw the line. */
@@ -117,14 +111,15 @@ export class BendyRuler {
                 let prev: Vector2 | null = null;
                 for (const point of this.points) {
                     if (prev) {
-                        dist += this.calcDistanceInSquares(prev, point);
+                        dist += grid.measure(prev, point);
                     }
                     prev = point;
                 }
                 if (currentPoint && prev)
-                    dist += this.calcDistanceInSquares(prev, currentPoint);
+                    dist += grid.measure(prev, currentPoint);
 
-                label.text.plainText = dist * grid.gridScale.parsed.multiplier + grid.gridScale.parsed.unit;
+                const distInGridUnit = dist * grid.gridScale.parsed.multiplier;
+                label.text.plainText = distInGridUnit.toFixed(0) + grid.gridScale.parsed.unit;
             }
         });
     }

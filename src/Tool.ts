@@ -1,8 +1,8 @@
-import OBR, { buildLabel, InteractionManager, KeyEvent, Label, ToolIcon, ToolMode, Vector2 } from '@owlbear-rodeo/sdk';
+import OBR, { buildLabel, InteractionManager, KeyEvent, Label, ToolIcon, ToolMode } from '@owlbear-rodeo/sdk';
 import getId from './getId';
 import { ToolContext, ToolEvent } from '@owlbear-rodeo/sdk/lib/types/Tool';
 import { BendyRuler } from './BendyRuler';
-import { grid } from './SyncGridData';
+import { grid } from '@davidsev/owlbear-utils';
 
 export class Tool implements ToolMode {
 
@@ -25,17 +25,8 @@ export class Tool implements ToolMode {
         }];
     }
 
-    private getRoundedPosition (point: Vector2): Vector2 {
-        const dpi = grid.dpi;
-        const halfDpi = { x: grid.dpi / 2, y: grid.dpi / 2 };
-        return {
-            x: Math.round((point.x + halfDpi.x) / dpi) * dpi - halfDpi.x,
-            y: Math.round((point.y + halfDpi.y) / dpi) * dpi - halfDpi.y,
-        };
-    }
-
     async onToolClick (context: ToolContext, event: ToolEvent): Promise<boolean> {
-        const point = this.getRoundedPosition(event.pointerPosition);
+        const point = grid.getCell(event.pointerPosition).center;
 
         // If we don't have a ruler, start one.
         if (!this.ruler) {
@@ -84,7 +75,7 @@ export class Tool implements ToolMode {
         if (!this.ruler)
             return;
 
-        const point = this.getRoundedPosition(event.pointerPosition);
+        const point = grid.getCell(event.pointerPosition).center;
         this.ruler.update(point);
     }
 
