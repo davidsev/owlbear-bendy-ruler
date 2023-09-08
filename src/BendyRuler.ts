@@ -33,7 +33,7 @@ export class BendyRuler {
         this.pointMarkers = buildPath()
             .position({ x: 0, y: 0 })
             .strokeColor('black')
-            .strokeWidth(10)
+            .strokeWidth(8)
             .fillColor('white')
             .layer('RULER')
             .attachedTo(this.path.id)
@@ -53,6 +53,7 @@ export class BendyRuler {
             .textAlignVertical('MIDDLE')
             .textType('PLAIN')
             .attachedTo(this.path.id)
+            .disableHit(true)
             .build();
 
         this.addPoint(startPoint);
@@ -98,7 +99,7 @@ export class BendyRuler {
             if (pointMarkers) {
                 const pointCommands: PathCommand[] = [];
                 for (const point of this.points) {
-                    pointCommands.push(...this.circle(point, 25));
+                    pointCommands.push(...this.circle(point, 15));
                 }
                 pointMarkers.commands = pointCommands;
             }
