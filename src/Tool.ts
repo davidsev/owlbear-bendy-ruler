@@ -2,7 +2,7 @@ import OBR, { buildLabel, InteractionManager, KeyEvent, Label, ToolIcon, ToolMod
 import getId from './getId';
 import { ToolContext, ToolEvent } from '@owlbear-rodeo/sdk/lib/types/Tool';
 import { BendyRuler } from './BendyRuler';
-import { grid } from '@davidsev/owlbear-utils';
+import { grid, SnapTo } from '@davidsev/owlbear-utils';
 
 export class Tool implements ToolMode {
 
@@ -13,6 +13,7 @@ export class Tool implements ToolMode {
     private cancelButton?: Label;
     private keepButton?: Label;
     private interaction?: InteractionManager<[cancel: Label, keep: Label]>;
+    private snapTo?: SnapTo;
 
     /** The icon that will be displayed in the toolbar. */
     get icons (): ToolIcon[] {
@@ -26,7 +27,16 @@ export class Tool implements ToolMode {
     }
 
     async onToolClick (context: ToolContext, event: ToolEvent): Promise<boolean> {
-        const point = grid.getCell(event.pointerPosition).center;
+
+        // If we haven't decided on edge/corner yet, do that.
+        if (!this.snapTo) {
+            if (grid.type == 'SQUARE') {
+                this.snapTo = grid.getNearestSnapType(event.pointerPosition);
+            } else
+                this.snapTo = SnapTo.CENTER;
+        }
+
+        const point = grid.snapTo(event.pointerPosition, this.snapTo);
 
         // If we don't have a ruler, start one.
         if (!this.ruler) {
@@ -72,10 +82,10 @@ export class Tool implements ToolMode {
     }
 
     onToolMove (context: ToolContext, event: ToolEvent): void {
-        if (!this.ruler)
+        if (!this.ruler || !this.snapTo)
             return;
 
-        const point = grid.getCell(event.pointerPosition).center;
+        const point = grid.snapTo(event.pointerPosition, this.snapTo);
         this.ruler.update(point);
     }
 
@@ -85,6 +95,7 @@ export class Tool implements ToolMode {
         else
             this.ruler?.cancel();
         this.ruler = undefined;
+        this.snapTo = undefined;
 
         if (this.interaction) {
             const [_, stop] = this.interaction;
