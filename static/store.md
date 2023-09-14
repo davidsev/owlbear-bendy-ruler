@@ -14,8 +14,16 @@ learn-more: https://github.com/davidsev/owlbear-bendy-ruler
 
 # Bendy Ruler
 
-This is a simple extention to measure paths with corners in them. \
+This is a simple extension to measure paths with corners in them. \
 It supports both square and hex grids, and all the measurement modes. \
+
+### Usage
+
+You can select the tool from the built-in "Measure" toolbar. \
+Then click to start measuring, and click again to add a corner. \
+When done either click ✅ to keep the measurement, or 🗑 / ESC to cancel.
+
+Currently editing an existing ruler isn't supported, you need to delete and create a new one.
 
 ### Other
 
