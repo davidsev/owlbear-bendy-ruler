@@ -120,7 +120,7 @@ export class BendyRuler {
                     dist += grid.measure(prev, currentPoint);
 
                 const distInGridUnit = dist * grid.gridScale.parsed.multiplier;
-                label.text.plainText = distInGridUnit.toFixed(0) + grid.gridScale.parsed.unit;
+                label.text.plainText = distInGridUnit.toFixed(grid.gridScale.parsed.digits) + grid.gridScale.parsed.unit;
             }
         });
     }
