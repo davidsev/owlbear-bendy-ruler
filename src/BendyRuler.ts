@@ -107,22 +107,25 @@ export class BendyRuler {
             // Update the label
             if (label) {
                 label.position = this.getLabelPosition(currentPoint);
-
-                let dist = 0;
-                let prev: Vector2 | null = null;
-                for (const point of this.points) {
-                    if (prev) {
-                        dist += grid.measure(prev, point);
-                    }
-                    prev = point;
-                }
-                if (currentPoint && prev)
-                    dist += grid.measure(prev, currentPoint);
-
+                const dist = this.calculateTotalLength(currentPoint);
                 const distInGridUnit = dist * grid.gridScale.parsed.multiplier;
                 label.text.plainText = distInGridUnit.toFixed(grid.gridScale.parsed.digits) + grid.gridScale.parsed.unit;
             }
         });
+    }
+
+    private calculateTotalLength (currentPoint: Vector2 | null): number {
+        let dist = 0;
+        let prev: Vector2 | null = null;
+        for (const point of this.points) {
+            if (prev) {
+                dist += grid.measure(prev, point);
+            }
+            prev = point;
+        }
+        if (currentPoint && prev)
+            dist += grid.measure(prev, currentPoint);
+        return dist;
     }
 
     private getLabelPosition (currentPoint: Vector2 | null): Vector2 {
@@ -153,6 +156,10 @@ export class BendyRuler {
     }
 
     public finalise (): void {
+        // If the length is 0, then we don't want to add anything.
+        if (this.calculateTotalLength(null) < 1)
+            return this.cancel();
+
         const items = this.update(null);
         if (items)
             OBR.scene.items.addItems(items);
