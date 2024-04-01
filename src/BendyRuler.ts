@@ -52,6 +52,8 @@ export class BendyRuler {
             .textAlign('CENTER')
             .textAlignVertical('MIDDLE')
             .textType('PLAIN')
+            .width(200)
+            .height(100)
             .attachedTo(this.path.id)
             .disableHit(true)
             .build();
@@ -142,15 +144,15 @@ export class BendyRuler {
             const p1 = this.points[this.points.length - 1];
             const p2 = currentPoint;
             return {
-                x: (p1.x + p2.x) / 2,
-                y: (p1.y + p2.y) / 2,
+                x: (p1.x + p2.x) / 2 - 100,
+                y: (p1.y + p2.y) / 2 - 50,
             };
         } else {
             const p1 = this.points[this.points.length - 2];
             const p2 = this.points[this.points.length - 1];
             return {
-                x: (p1.x + p2.x) / 2,
-                y: (p1.y + p2.y) / 2,
+                x: (p1.x + p2.x) / 2 - 100,
+                y: (p1.y + p2.y) / 2 - 50,
             };
         }
     }
