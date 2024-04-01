@@ -6,7 +6,8 @@ import { grid, SnapTo } from '@davidsev/owlbear-utils';
 
 export class Tool implements ToolMode {
 
-    readonly id = getId('tool');
+    public readonly id = getId('tool');
+    public readonly shortcut = 'B';
 
     private ruler?: BendyRuler;
 
