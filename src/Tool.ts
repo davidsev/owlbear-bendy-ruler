@@ -90,6 +90,10 @@ export class Tool implements ToolMode {
         this.ruler.update(point);
     }
 
+    onToolDoubleClick (context: ToolContext, event: ToolEvent): void {
+        this.stop(true);
+    }
+
     private stop (keep: boolean): void {
         // Track the event.
         if (this.ruler && window._paq)
@@ -118,6 +122,9 @@ export class Tool implements ToolMode {
     onKeyDown (context: ToolContext, event: KeyEvent) {
         if (event.key === 'Escape') {
             this.stop(false);
+        }
+        if (event.key === 'Enter') {
+            this.stop(true);
         }
     }
 }
