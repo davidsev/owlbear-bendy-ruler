@@ -1,4 +1,4 @@
-import OBR, { buildLabel, InteractionManager, KeyEvent, Label, ToolIcon, ToolMode } from '@owlbear-rodeo/sdk';
+import OBR, { buildLabel, KeyEvent, Label, ToolIcon, ToolMode } from '@owlbear-rodeo/sdk';
 import getId from './getId';
 import { ToolContext, ToolEvent } from '@owlbear-rodeo/sdk/lib/types/Tool';
 import { BendyRuler } from './BendyRuler';
@@ -13,7 +13,6 @@ export class Tool implements ToolMode {
 
     private cancelButton?: Label;
     private keepButton?: Label;
-    private interaction?: InteractionManager<[cancel: Label, keep: Label]>;
     private snapTo?: SnapTo;
 
     /** The icon that will be displayed in the toolbar. */
@@ -54,7 +53,7 @@ export class Tool implements ToolMode {
                 .plainText('✅')
                 .pointerHeight(0)
                 .build();
-            this.interaction = await OBR.interaction.startItemInteraction([this.cancelButton, this.keepButton]);
+            OBR.scene.local.addItems([this.cancelButton, this.keepButton]);
             return false;
         }
 
@@ -70,10 +69,8 @@ export class Tool implements ToolMode {
 
         // Otherwise add a point, and update the buttons' position.
         this.ruler.addPoint(point);
-        if (this.interaction) {
-            const [update] = this.interaction;
-            update((items) => {
-                const [cancel, keep] = items;
+        if (this.keepButton && this.cancelButton) {
+            OBR.scene.local.updateItems([this.keepButton.id, this.cancelButton.id], ([keep, cancel]) => {
                 cancel.position = { x: point.x + 45, y: point.y - 40 };
                 keep.position = { x: point.x - 45, y: point.y - 40 };
             });
@@ -106,11 +103,12 @@ export class Tool implements ToolMode {
         this.ruler = undefined;
         this.snapTo = undefined;
 
-        if (this.interaction) {
-            const [_, stop] = this.interaction;
-            stop();
-            this.interaction = undefined;
+        if (this.keepButton) {
+            OBR.scene.local.deleteItems([this.keepButton.id]);
             this.keepButton = undefined;
+        }
+        if (this.cancelButton) {
+            OBR.scene.local.deleteItems([this.cancelButton.id]);
             this.cancelButton = undefined;
         }
     }
