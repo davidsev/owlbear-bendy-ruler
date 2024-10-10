@@ -4,7 +4,7 @@ import { grid } from '@davidsev/owlbear-utils';
 
 window.init = function () {
     OBR.onReady(async () => {
-        await grid.init();
+        await grid.awaitReady();
         OBR.tool.createMode(new Tool());
     });
 };
