@@ -117,17 +117,21 @@ export class BendyRuler {
     }
 
     private calculateTotalLength (currentPoint: Vector2 | null): number {
-        let dist = 0;
-        let prev: Vector2 | null = null;
-        for (const point of this.points) {
-            if (prev) {
-                dist += grid.measure(prev, point);
-            }
-            prev = point;
-        }
-        if (currentPoint && prev)
-            dist += grid.measure(prev, currentPoint);
-        return dist;
+
+        const points = [...this.points, currentPoint].filter(p => p) as Vector2[];
+        return grid.measure(...points);
+
+        // let dist = 0;
+        // let prev: Vector2 | null = null;
+        // for (const point of this.points) {
+        //     if (prev) {
+        //         dist += grid.measure(prev, point);
+        //     }
+        //     prev = point;
+        // }
+        // if (currentPoint && prev)
+        //     dist += grid.measure(prev, currentPoint);
+        // return dist;
     }
 
     private getLabelPosition (currentPoint: Vector2 | null): Vector2 {
