@@ -92,10 +92,6 @@ export class Tool implements ToolMode {
     }
 
     private stop (keep: boolean): void {
-        // Track the event.
-        if (this.ruler && window._paq)
-            window._paq.push(['trackEvent', 'ruler', keep ? 'keep' : 'cancel']);
-
         if (keep)
             this.ruler?.finalise();
         else
