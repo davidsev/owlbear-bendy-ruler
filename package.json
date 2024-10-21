@@ -1,26 +1,26 @@
 {
-  "version" : "1.0.0-RC.1",
-  "scripts" : {
-    "dev" : "webpack --node-env=development",
-    "watch" : "webpack --node-env=development --watch",
-    "serve" : "URL_PREFIX=http://127.0.0.1:8084 webpack-dev-server --node-env=development --port 8084 --hot",
-    "prod" : "webpack --node-env=production"
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "webpack --node-env=development",
+    "watch": "webpack --node-env=development --watch",
+    "serve": "URL_PREFIX=http://127.0.0.1:8084 webpack-dev-server --node-env=development --port 8084 --hot",
+    "prod": "webpack --node-env=production"
   },
-  "keywords" : [],
-  "author" : "",
-  "license" : "GPL-3.0-or-later",
-  "description" : "",
-  "devDependencies" : {
-    "copy-webpack-plugin" : "^12.0.2",
-    "html-webpack-plugin" : "^5.6.2",
-    "ts-loader" : "^9.5.1",
-    "typescript" : "^5.6.3",
-    "webpack" : "^5.95.0",
-    "webpack-cli" : "^5.1.4",
-    "webpack-dev-server" : "^5.1.0"
+  "keywords": [],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "description": "",
+  "devDependencies": {
+    "copy-webpack-plugin": "^12.0.2",
+    "html-webpack-plugin": "^5.6.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   },
-  "dependencies" : {
-    "@davidsev/owlbear-utils" : "^0.27.0",
-    "@owlbear-rodeo/sdk" : "^3.0.0"
+  "dependencies": {
+    "@davidsev/owlbear-utils": "^0.27.0",
+    "@owlbear-rodeo/sdk": "^3.0.0"
   }
 }
