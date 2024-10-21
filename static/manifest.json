@@ -1,6 +1,6 @@
 {
   "name" : "Bendy Ruler",
-  "version" : "0.0.1",
+  "version" : "DEV",
   "description" : "Draw rulers with bends in them",
   "manifest_version" : 1,
   "background_url" : "/background.html",

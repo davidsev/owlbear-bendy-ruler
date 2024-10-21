@@ -11,5 +11,5 @@ way.
 
 ## Usage
 
-See [store.md](static/store.md) for usage instructions.
+See [store.md](static_root/store.md) for usage instructions.
 

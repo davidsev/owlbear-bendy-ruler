@@ -2,13 +2,13 @@
 title: Bendy Ruler
 description: Measure paths with corners in them
 author: David Severwright
-image: https://owlbear-bendy-ruler.davidsev.co.uk/banner.png
-icon: https://owlbear-bendy-ruler.davidsev.co.uk/icon.svg
+image: https://bendy-ruler.owlbear.davidsev.co.uk/banner.png
+icon: https://bendy-ruler.owlbear.davidsev.co.uk/icon.svg
 tags:
     - tool
     - combat
     - drawing
-manifest: https://owlbear-bendy-ruler.davidsev.co.uk/manifest.json
+manifest: https://bendy-ruler.owlbear.davidsev.co.uk/manifest.json
 learn-more: https://github.com/davidsev/owlbear-bendy-ruler
 ---
 
